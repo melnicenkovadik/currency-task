@@ -1,49 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export interface UserDetails {
-    token?: string;
-    mail: string;
-    username?: string;
-    password?: string;
-}
-
-export interface IResponse {
-    userDetails: UserDetails;
-}
 const API_URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory';
 
-export const authApi = createApi({
-    reducerPath: 'authApi',
+
+export const currenciesApi = createApi({
+    reducerPath: 'currenciesApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `${process.env.REACT_APP_API_ENDPOINT ?? API_URL}`,
+        baseUrl:  API_URL ?? `${process.env.REACT_APP_API_ENDPOINT }`,
     }),
     endpoints: builder => ({
-        login: builder.query<UserDetails, UserDetails>({
-            query: ({ password, mail }) => ({
-                url: `/exchange?json`,
-                method: 'POST',
-                body: {
-                    password,
-                    mail,
-                },
-            }),
-            transformResponse: (response: IResponse) => {
-                return response.userDetails;
-            },
+        getCourses: builder.query<any, any>({
+            query: (path='exchange?json') => `/${path}`,
         }),
-        register: builder.query<UserDetails, UserDetails>({
-            query: ({ username, mail, password }) => ({
-                url: `/auth/register`,
-                method: 'POST',
-                body: {
-                    username,
-                    mail,
-                    password,
-                },
-            }),
-            transformResponse: (response: IResponse) => response.userDetails,
-        }),
+        getCourseByCurrency: builder.query<any, any>({
+            query: (currency) => `/exchange?valcode=${currency}`,
+        })
     }),
 });
 
-export const { useLazyLoginQuery, useLazyRegisterQuery } = authApi;
+export const { useGetCoursesQuery } = currenciesApi;
